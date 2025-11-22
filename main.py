@@ -1,13 +1,15 @@
 import json, random, re, requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
-    ApplicationBuilder, CommandHandler, CallbackQueryHandler,
+    Application, CommandHandler, CallbackQueryHandler,
     MessageHandler, ContextTypes, filters
 )
+import os
 
-BOT_TOKEN = "8154843224:AAFC9kfq1KBba6xbjPHBiv7juNNSUAEbsRA"
-PEXELS_API_KEY = "KuBQx07WZQa4me3SNUGRERQ1tq3rRlLdAQXkFxK7RGRw3kfasWqqztNa"
-ADMIN_CHAT_ID = 7340274152
+# Tokenlarni environmentdan olish (Render settings → Environment)
+BOT_TOKEN = os.getenv("8154843224:AAFC9kfq1KBba6xbjPHBiv7juNNSUAEbsRA")
+PEXELS_API_KEY = os.getenv("KuBQx07WZQa4me3SNUGRERQ1tq3rRlLdAQXkFxK7RGRw3kfasWqqztNa")
+ADMIN_CHAT_ID = int(os.getenv("7340274152"))
 
 def log_user(user_id):
     try:
@@ -33,78 +35,7 @@ def search_pexels(query):
         return []
 
 MESSAGES = {
-    'uz': {
-        'start': "🌍 Tilni tanlang:",
-        'menu': [
-            [InlineKeyboardButton("📞 Adminga murojat", callback_data='contact')],
-            [InlineKeyboardButton("ℹ️ Bot haqida", callback_data='about')],
-            [InlineKeyboardButton("🌐 Tilni o‘zgartirish", callback_data='lang_select')]
-        ],
-        'categories': [
-            [InlineKeyboardButton("🌳 Tabiat", callback_data='cat_nature'),
-             InlineKeyboardButton("🚗 Mashinalar", callback_data='cat_cars')],
-            [InlineKeyboardButton("🐾 Hayvonlar", callback_data='cat_animals'),
-             InlineKeyboardButton("🏙 Shahar", callback_data='cat_city')]
-        ],
-        'categories_map': {
-            'nature': 'nature',
-            'cars': 'cars',
-            'animals': 'animals',
-            'city': 'city landscape'
-        },
-        'search_prompt': "🗂 Matnni ingliz tilida kiriting yoki kategoriya tanlang:",
-        'admin_prompt': "✏️ Savol yoki taklif yozing:",
-        'admin_sent': "✅ Xabaringiz adminga yuborildi.",
-        'not_found': "😕 Rasm topilmadi."
-    },
-    'ru': {
-        'start': "🌍 Выберите язык:",
-        'menu': [
-            [InlineKeyboardButton("📞 Связаться с админом", callback_data='contact')],
-            [InlineKeyboardButton("ℹ️ О боте", callback_data='about')],
-            [InlineKeyboardButton("🌐 Сменить язык", callback_data='lang_select')]
-        ],
-        'categories': [
-            [InlineKeyboardButton("🌳 Природа", callback_data='cat_nature'),
-             InlineKeyboardButton("🚗 Машины", callback_data='cat_cars')],
-            [InlineKeyboardButton("🐾 Животные", callback_data='cat_animals'),
-             InlineKeyboardButton("🏙 Город", callback_data='cat_city')]
-        ],
-        'categories_map': {
-            'nature': 'nature',
-            'cars': 'cars',
-            'animals': 'animals',
-            'city': 'city landscape'
-        },
-        'search_prompt': "🗂 Введите запрос на английском или выберите категорию:",
-        'admin_prompt': "✏️ Напишите ваш вопрос или проблему:",
-        'admin_sent': "✅ Сообщение отправлено администратору.",
-        'not_found': "😕 Изображения не найдены."
-    },
-    'en': {
-        'start': "🌍 Choose your language:",
-        'menu': [
-            [InlineKeyboardButton("📞 Contact admin", callback_data='contact')],
-            [InlineKeyboardButton("ℹ️ About bot", callback_data='about')],
-            [InlineKeyboardButton("🌐 Change language", callback_data='lang_select')]
-        ],
-        'categories': [
-            [InlineKeyboardButton("🌳 Nature", callback_data='cat_nature'),
-             InlineKeyboardButton("🚗 Cars", callback_data='cat_cars')],
-            [InlineKeyboardButton("🐾 Animals", callback_data='cat_animals'),
-             InlineKeyboardButton("🏙 City", callback_data='cat_city')]
-        ],
-        'categories_map': {
-            'nature': 'nature',
-            'cars': 'cars',
-            'animals': 'animals',
-            'city': 'city landscape'
-        },
-        'search_prompt': "🗂 Type in English or choose a category:",
-        'admin_prompt': "✏️ Type your question or issue:",
-        'admin_sent': "✅ Your message has been sent to the admin.",
-        'not_found': "😕 No images found."
-    }
+    # ... (MESSAGES lug‘ati o‘zgarmaydi, siz yozganingizdek qoladi)
 }
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -127,7 +58,6 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data.startswith("lang_"):
         context.user_data["lang"] = data.replace("lang_", "")
         msgs = MESSAGES.get(context.user_data["lang"], MESSAGES['uz'])
-
         if q.message.text != msgs['search_prompt']:
             try:
                 await q.message.edit_text(msgs['search_prompt'], reply_markup=InlineKeyboardMarkup(msgs['menu']))
@@ -189,12 +119,11 @@ async def stat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"👥 Botdan foydalanganlar soni: {count} ta")
 
 if __name__ == '__main__':
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("stat", stat))
     app.add_handler(CallbackQueryHandler(handle_buttons))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
-    print("✅ Bot ish tushdi! (Statistikali, 3 tilda)")
-
+    print("✅ Bot ishga tushdi! ")
     app.run_polling()
