@@ -1,15 +1,17 @@
+import os
 import json, random, re, requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
 
-app = Application.builder().token(BOT_TOKEN).build()
-app.run_polling()
-import os
-
-# Tokenlarni environmentdan olish (Render settings → Environment)
+# Environment variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID"))
+
+# Botni ishga tushirish
+app = Application.builder().token(BOT_TOKEN).build()
+app.run_polling()
+
 
 def log_user(user_id):
     try:
