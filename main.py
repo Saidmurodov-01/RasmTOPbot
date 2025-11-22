@@ -7,9 +7,9 @@ from telegram.ext import (
 import os
 
 # Tokenlarni environmentdan olish (Render settings → Environment)
-BOT_TOKEN = os.getenv("8154843224:AAFC9kfq1KBba6xbjPHBiv7juNNSUAEbsRA")
-PEXELS_API_KEY = os.getenv("KuBQx07WZQa4me3SNUGRERQ1tq3rRlLdAQXkFxK7RGRw3kfasWqqztNa")
-ADMIN_CHAT_ID = int(os.getenv("7340274152"))
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID"))
 
 def log_user(user_id):
     try:
