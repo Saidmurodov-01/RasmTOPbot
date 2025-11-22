@@ -1,9 +1,9 @@
 import json, random, re, requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    Application, CommandHandler, CallbackQueryHandler,
-    MessageHandler, ContextTypes, filters
-)
+from telegram.ext import Application
+
+app = Application.builder().token(BOT_TOKEN).build()
+app.run_polling()
 import os
 
 # Tokenlarni environmentdan olish (Render settings → Environment)
